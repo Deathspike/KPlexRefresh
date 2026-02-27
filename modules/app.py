@@ -11,7 +11,7 @@ class Engine:
         self._refresh_rates = refresh_rates
         self._tolerance = tolerance
 
-    def _find_best_candidate(self, active: Mode, modes: list[Mode]):
+    def _get_candidates(self, active: Mode, modes: list[Mode]):
         for refresh_rate in self._refresh_rates:
             candidates = (
                 target
@@ -26,7 +26,7 @@ class Engine:
             )
 
             if target:
-                return target
+                yield target
 
         return None
 
@@ -44,12 +44,12 @@ class Engine:
             # Find the active and target mode.
             active_id = output.current_mode_id
             active = next((mode for mode in output.modes if mode.id == active_id), None)
-            target = self._find_best_candidate(active, output.modes) if active else None
+            targets = list(self._get_candidates(active, output.modes)) if active else []
 
             # Switch if the target mode is different.
-            if active and target and active != target:
-                print(f"output #{output.id} switching to {target.refresh_rate}hz")
-                cmd(["kscreen-doctor", f"output.{output.id}.mode.{target.id}"])
+            if active and active not in targets and targets:
+                print(f"output #{output.id} switching to {targets[0].refresh_rate}hz")
+                cmd(["kscreen-doctor", f"output.{output.id}.mode.{targets[0].id}"])
 
                 # Save the active mode for later.
                 if output.id not in self._previous:
@@ -82,6 +82,6 @@ class Poller:
 
 
 if __name__ == "__main__":
-    engine = Engine([120, 96, 72, 48, 24], 0.05)
+    engine = Engine([240, 144, 120, 96, 72, 48, 24], 0.05)
     poller = Poller(engine, "plex-bin")
     poller.run_forever(1)
