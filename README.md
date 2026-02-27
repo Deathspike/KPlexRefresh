@@ -13,18 +13,23 @@ I wrote this because Plex HTPC doesn't properly switch refresh rates on Fedora K
 
 ## Requirements
 
-- Linux (with `pgrep` and `systemd`)
-- KDE (with `kscreen-doctor`)
+- Fedora KDE 43+
 - Plex HTPC installed via Flatpak
 
 ## Installation
 
-Clone the repository somewhere permanent (for example `~/projects`).
+You can _install_ the `systemd` service for _KPlexRefresh_ with:
 
 ```bash
 git clone https://github.com/Deathspike/KPlexRefresh
 cd KPlexRefresh
-python -m modules.install
+python -m modules.service.install
 ```
 
-This sets up a `systemd` user service to run _KPlexRefresh_ in the background.
+Or _uninstall_ with:
+
+```bash
+python -m modules.service.uninstall
+```
+
+Otherwise, run it yourself with `python -m modules.app`.
